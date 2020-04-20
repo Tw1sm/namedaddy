@@ -1,0 +1,3 @@
+godaddypy
+requests
+PyNamecheap
