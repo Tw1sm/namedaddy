@@ -1,4 +1,4 @@
-## ConfigDaddy
+## NameDaddy
 Manage GoDaddy and Namecheap DNS records for previously purchased domains.
 
 ### Install
