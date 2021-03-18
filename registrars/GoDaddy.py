@@ -1,4 +1,6 @@
 from godaddypy import Client, Account
+import requests
+import json
 
 class GoDaddyApiClient:
     name = 'GoDaddy'
@@ -8,9 +10,21 @@ class GoDaddyApiClient:
 
     def __init__(self, GoDaddyConfig):
         self.client = self.get_client(GoDaddyConfig)
+        self.domains = []
         try:
             print(f'\n[*] Attemtping to gather list of {color.blue}{self.name}{color.end} domains...\n')
-            self.domains = self.client.get_domains()
+            # get list of domains manually
+            # using godaddypy for this grabs domains that are no longer active on the account
+            headers = {
+                'Authorization': f'sso-key {GoDaddyConfig.api_key}:{GoDaddyConfig.secret_key}'
+            }
+            # get only active domains, get top 1,000 results (not sure what the default is, but I've gotten results cutoff before)
+            r = requests.get('https://api.godaddy.com/v1/domains?statuses=ACTIVE&limit=1000', headers=headers)
+            domain_list = json.loads(r.content)
+
+            for domain in domain_list:
+                self.domains.append(domain['domain'])
+
         except:
             print(f'{color.red}[!] Authentication failure{color.end}')
             exit()
