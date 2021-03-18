@@ -260,7 +260,7 @@ class color:
 def getArgs():
     parser = argparse.ArgumentParser(description="used to configure DNS for GoDaddy and Namecheap domains", formatter_class=argparse.RawDescriptionHelpFormatter)
 
-    parser.add_argument('--namecheap', action="store_true", dest='namecheap', help='Nessus account username', required=False)
+    parser.add_argument('--namecheap', action="store_true", dest='namecheap', help='Default to Namecheap domains instead of GoDaddy', required=False)
 
     args = parser.parse_args()
     return args.namecheap
