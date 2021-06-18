@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
+from registrars.Route53 import Route53ApiClient
 from godaddypy import Client, Account
 from registrars.Namecheap import NamecheapApiClient
 from registrars.GoDaddy import GoDaddyApiClient
-from configs import GoDaddyConfig, NamecheapConfig, StockDomainConfigs
+from registrars.Route53 import Route53ApiClient
+from configs import GoDaddyConfig, NamecheapConfig, Route53Config, StockDomainConfigs
 from requests.exceptions import HTTPError
 from time import sleep
 import cmd
@@ -11,6 +13,7 @@ import argparse
 from contextlib import contextmanager
 import io
 from contextlib import redirect_stdout
+from texttable import Texttable
 
 
 # called to move from the ModuleMenu back to the Main Menu
@@ -42,8 +45,12 @@ class MainMenu(cmd.Cmd):
     
     # initalize the API client and get domains
     def init_client(self):
-        self.client = NamecheapApiClient(NamecheapConfig) if self.registrar == 'Namecheap' else GoDaddyApiClient(GoDaddyConfig)
-
+        if self.registrar == 'Namecheap':
+            self.client = NamecheapApiClient(NamecheapConfig)
+        elif self.registrar == 'Route53':
+            self.client = Route53ApiClient(Route53Config)
+        else:
+            self.client = GoDaddyApiClient(GoDaddyConfig)
     
     # set how the prompt will appear
     def setprompt(self):
@@ -76,6 +83,12 @@ class MainMenu(cmd.Cmd):
     def do_show(self, line):
         '''Display domains'''
         print('')
+        table = Texttable(0)
+        table.header(['Hosted Zone'] if self.registrar == 'Route53' else ['Domain Name'])
+        for domain in self.client.domains:
+            table.add_row([domain])
+        print(table.draw())
+        '''
         print('%-31s' % ('+------------------------------+'))
         print('|%-30s|' % ('Domain Name'))
 
@@ -88,6 +101,7 @@ class MainMenu(cmd.Cmd):
                 return
             #sleep(0.1)
         print('%-31s' % ('+------------------------------+'))
+        '''
         print('')
         
 
@@ -123,14 +137,18 @@ class MainMenu(cmd.Cmd):
 
 
     def do_switch(self, line):
-        '''Swtich between GoDaddy and Namecheap API clients'''
-        if self.registrar == 'Namecheap':
+        '''switch <registrar>. Swtich between GoDaddy, Namecheap and Route53 API clients'''
+        if line.lower() == 'godaddy':
             self.registrar = 'GoDaddy'
             self.client = GoDaddyApiClient(GoDaddyConfig)
-        else:
+        elif line.lower() == 'namecheap':
             self.registrar = 'Namecheap'
             self.client = NamecheapApiClient(NamecheapConfig)
-
+        elif line.lower() == 'route53':
+            self.registrar = 'Route53'
+            self.client = Route53ApiClient(Route53Config)
+        else:
+            print('[!] Invalid registrar entered')
 
     # format for the menu shown by the 'help' command
     def print_topics(self, header, commands, cmdlen, maxcol):
@@ -198,7 +216,7 @@ class DomainMenu(cmd.Cmd):
 
 
     def do_delete(self, line):
-        '''GoDaddy: delete <record name> (record type). Deletes DNS records by name or name/type combos. All records matching criteria will be deleted
+        '''GoDaddy/Route53: delete <record name> <record type>. Deletes DNS records by name or name/type combos. All records matching criteria will be deleted
                   Namecheap: delete <record id>. Delete a record by suppling an ID from the records command'''
         self.mainMenu.client.delete_record(self.domain, line)
 
@@ -260,14 +278,15 @@ class color:
 def getArgs():
     parser = argparse.ArgumentParser(description="used to configure DNS for GoDaddy and Namecheap domains", formatter_class=argparse.RawDescriptionHelpFormatter)
 
-    parser.add_argument('--namecheap', action="store_true", dest='namecheap', help='Default to Namecheap domains instead of GoDaddy', required=False)
+    parser.add_argument('--namecheap', action="store_true", dest='namecheap', help='Default to Namecheap domains instead of Route53', required=False)
+    parser.add_argument('--godaddy', action="store_true", dest='godaddy', help='Default to GoDaddy domains instead of Route53', required=False)
 
     args = parser.parse_args()
-    return args.namecheap
+    return args.namecheap, args.godaddy
 
 
 def main():
-    namecheap = getArgs()
+    namecheap, godaddy = getArgs()
     print(f'''
 _____   __                      ________       _________________        
 ___  | / /_____ _______ ___________  __ \_____ ______  /_____  /____  __
@@ -278,9 +297,13 @@ _  /|  / / /_/ /_  / / / / /  __/  /_/ // /_/ // /_/ / / /_/ / _  /_/ /
                            {color.yellow}Who's your daddy?{color.end}
     ''')
     
-    main = MainMenu('Namecheap' if namecheap else 'GoDaddy')
+    if namecheap:
+        main = MainMenu('Namecheap')
+    elif godaddy:
+        main = MainMenu('GoDaddy')
+    else:
+        main = MainMenu('Route53')
   
-
     main.cmdloop()
 
 
