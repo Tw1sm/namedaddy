@@ -41,3 +41,4 @@ updateip    <ip addr>                                     Updates the IP the add
 ### Known Issues
 * Deleting some records with the GoDaddy API client can be a little buggy - only way to delete is by providing the name of the record and optionally the record type. This works sometimes, but not always in my experience.
 * Adding a MX record with the Namecheap API client usually fails unless the `MAIL SETTINGS` value has been changed to `Custom MX` using the web interface
+* The `route53` library requires that DNS records have a TTL value otherwise it will fail to get a list of records. So far, I've encounterd this on `A` records that have the `Value/route traffic to` set to an alias (on/off slider in the Route53 web interface)
