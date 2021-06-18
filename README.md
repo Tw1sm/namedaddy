@@ -1,5 +1,5 @@
 ## NameDaddy
-Manage GoDaddy and Namecheap DNS records for previously purchased domains.
+Manage GoDaddy, Namecheap and Route53 DNS records for previously purchased domains.
 
 ### Install
 ```
@@ -8,7 +8,7 @@ cd namedaddy
 pip3 install -r requirements.txt
 ./namedaddy.py
 ```
-You must already have API keys for at least 1 of Namecheap or GoDaddy and set API key values in `config.py`.
+You must already have API keys for at least 1 of Namecheap, GoDaddy, or Route53 and set API key values in `config.py`.
 
 ### Main Menu
 
@@ -18,7 +18,7 @@ Command    Syntax <Required> (Optional)      About
 exit                                         Close NameDaddy
 help                                         Displays help menu
 show                                         Display all domains or active domains to the screen
-switch                                       Swtich between GoDaddy and Namecheap API clients
+switch     <registrar>                       Swtich between GoDaddy, Namecheap and Route53 API clients
 use        <domain name>                     Select a domain to edit
 ```
 
