@@ -25,17 +25,17 @@ use        <domain name>                     Select a domain to edit
 ### Domain Menu
 
 ```
-Command     Syntax <Required> (Optional)            About
-=======     ============================            =====
-add         <type> (priority> <name> <value>        Add a DNS record. Priority is only for MX
-back                                                Return to main menu
-delete      GoDaddy: <record name> (record type)    Deletes GoDaddy DNS records by name or name/type combos. All records matching criteria will be deleted
-delete      Namecheap <record id>                   Deletes Namecheap DNS records by record ID
-exit                                                Close ConfigDaddy
-help                                                Displays help menu
-records                                             Display DNS records
-stockconfig <config name>                           Configure a new domain with preset records
-updateip    <ip addr>                               Updates the IP the address domain points to
+Command     Syntax <Required> (Optional)                  About
+=======     ============================                  =====
+add         <type> (priority> <name> <value>              Add a DNS record. Priority is only for MX
+back                                                      Return to main menu
+delete      GoDaddy/Route53: <record name> (record type)  Deletes GoDaddy DNS records by name or name/type combos. All records matching criteria will be deleted
+delete      Namecheap <record id>                         Deletes Namecheap DNS records by record ID
+exit                                                      Close ConfigDaddy
+help                                                      Displays help menu
+records                                                   Display DNS records
+stockconfig <config name>                                 Configure a new domain with preset records
+updateip    <ip addr>                                     Updates the IP the address domain points to
 ```
 
 ### Known Issues
