@@ -1,3 +1,5 @@
 godaddypy
 requests
 PyNamecheap
+route53
+texttable

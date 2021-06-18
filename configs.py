@@ -7,6 +7,9 @@ class NamecheapConfig:
     username = '' # your namecheap username
     ip_address = '' # IP whitelisted in namecheap
 
+class Route53Config:
+    aws_access_key_id = ''
+    aws_secret_access_key = ''
 
 class StockDomainConfigs:
     configs = [
