@@ -67,6 +67,7 @@ class Route53ApiClient:
 
 
     def add_record(self, domain, rec_type, name, data, priority=None):
+        edited = False
         rec_type = rec_type.upper()
         zone = self.client.get_hosted_zone_by_id(self.zones[domain])
 
@@ -76,28 +77,38 @@ class Route53ApiClient:
             name += suffix
 
         try:
-            if rec_type == 'A':
-                zone.create_a_record(name=name, values=[data])
-            elif rec_type == 'AAAA':
-                zone.create_aaaa_record(name=name, values=[data])
-            elif rec_type == 'CNAME':
-                zone.create_cname_record(name=name, values=[data])
-            elif rec_type == 'MX':
-                if priority is None:
-                    priority = '10'
-                zone.create_mx_record(name=name, values=[f'{priority} {data}'])
-            elif rec_type == 'NS':
-                zone.create_ns_record(name=name, values=[data])
-            elif rec_type == 'PTR':
-                zone.create_ptr_record(name=name, values=[data])
-            elif rec_type == 'SRV':
-                zone.create_srv_record(name=name, values=[data])
-            elif rec_type == 'TXT':
-                zone.create_txt_record(name=name, values=[data])
-            else:
-                print(f'{color.red}[!] Record type \'{rec_type}\' does not exist{color.end}\n')
+            for set in zone.record_sets:
+                typ = set.__class__.__name__.replace('ResourceRecordSet', '')
+                if set.name[:-1] == name and typ == rec_type:
+                    set.records = [data]
+                    set.save()
+                    edited = True
+                    print('\n[+] Existing record edited\n')
+                    break
+            
+            if not edited:
+                if rec_type == 'A':
+                    zone.create_a_record(name=name, values=[data])
+                elif rec_type == 'AAAA':
+                    zone.create_aaaa_record(name=name, values=[data])
+                elif rec_type == 'CNAME':
+                    zone.create_cname_record(name=name, values=[data])
+                elif rec_type == 'MX':
+                    if priority is None:
+                        priority = '10'
+                    zone.create_mx_record(name=name, values=[f'{priority} {data}'])
+                elif rec_type == 'NS':
+                    zone.create_ns_record(name=name, values=[data])
+                elif rec_type == 'PTR':
+                    zone.create_ptr_record(name=name, values=[data])
+                elif rec_type == 'SRV':
+                    zone.create_srv_record(name=name, values=[data])
+                elif rec_type == 'TXT':
+                    zone.create_txt_record(name=name, values=[data])
+                else:
+                    print(f'{color.red}[!] Record type \'{rec_type}\' does not exist{color.end}\n')
 
-            print('\n[+] Record added\n')
+                print('\n[+] Record added\n')
         except Exception as e:
             print(f'{color.red}[!] Error adding DNS record{color.end}\n{e}\n')
 
