@@ -83,7 +83,7 @@ class GoDaddyApiClient:
 
     
     def delete_record(self, domain, line):
-        # sort of messy with godaddypy - only deleted records ny name/type pairing and deletes all that match
+        # sort of messy with godaddypy - only deleted records by name/type pairing and deletes all that match
         args = line.split(' ')
        
         try:
