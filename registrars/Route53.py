@@ -73,7 +73,7 @@ class Route53ApiClient:
 
         # route53 records names need to end with '.yourdomain.com'
         suffix = f'.{domain}'
-        if not name.endswith(suffix):
+        if not name.endswith(domain):
             name += suffix
 
         try:
